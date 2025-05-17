@@ -9,29 +9,46 @@
 extern double InputSignal_f32_1kHz_15kHz[SIG_LENGTH];
 extern  double  Impulse_response[IMP_RSP_LENGTH];
         double Output_signal[SIG_LENGTH+IMP_RSP_LENGTH];
+        double Output_sum_signal[SIG_LENGTH];
 
-void convolution( double *sig_src_arr,
-                  double *sig_dest_arr,
-                  double *imp_response_arr,
-                  int sig_src_length,
-                  int imp_response_length
+
+
+void convolution(double *sig_src_arr,
+                 double *sig_dest_arr,
+                 double *imp_response_arr,
+                 int sig_src_length,
+                 int imp_response_length
                  );
 
+// Add running sum 
+void calc_running_sum(double *sig_src_arr,
+                  double *sig_dest_arr,
+                  int sig_src_length
+                 );
 
 int main()
 {
     FILE *input_sig_fptr, *imp_rsp_fptr,*output_sig_fptr;
+    
+    // Running sum
+    FILE *output_sum_sig_fptr;
 
-     convolution( (double*) InputSignal_f32_1kHz_15kHz,
-                  (double*) Output_signal,
-                  (double*) Impulse_response,
-                  (int) SIG_LENGTH,
-                  (int) IMP_RSP_LENGTH
+     convolution(InputSignal_f32_1kHz_15kHz,
+                 Output_signal,
+                 Impulse_response,
+                 SIG_LENGTH,
+                 IMP_RSP_LENGTH
                  );
+
+    calc_running_sum(InputSignal_f32_1kHz_15kHz,
+                     Output_sum_signal,
+                     SIG_LENGTH
+                    );
 
     input_sig_fptr = fopen("input_signal.dat","w");
     imp_rsp_fptr   = fopen ("impulse_response.dat","w");
     output_sig_fptr = fopen("output_signal.dat","w");
+    output_sum_sig_fptr = fopen("output_sum_signal.dat","w");
 
     for(int i=0;i<SIG_LENGTH;i++)
     {
@@ -45,12 +62,16 @@ int main()
     }
     fclose(imp_rsp_fptr);
 
-    for(int i=0;i<SIG_LENGTH+IMP_RSP_LENGTH;i++)
+    for(int i=0;i<SIG_LENGTH+IMP_RSP_LENGTH-1;i++)
     {
       fprintf(output_sig_fptr,"\n%f",Output_signal[i]);
     }
     fclose(output_sig_fptr);
-
+ 
+    for (int i =0; i<SIG_LENGTH; i++) {
+      fprintf(output_sum_sig_fptr,"\n%f",Output_sum_signal[i]);
+    }
+    fclose(output_sum_sig_fptr);
     return 0;
 }
 
@@ -63,7 +84,7 @@ void convolution( double *sig_src_arr,
                  )
 {
     int i,j;
-    for(i=0;i<sig_src_length+imp_response_length;i++)
+    for(i=0;i<sig_src_length+imp_response_length-1;i++)
     {
         sig_dest_arr[i] =0;
     }
@@ -79,6 +100,17 @@ void convolution( double *sig_src_arr,
 
 }
 
-
+void calc_running_sum( double *sig_src_arr,
+                  double *sig_dest_arr,
+                  int sig_src_length
+                 )
+{
+    int i;
+    sig_dest_arr[0] = sig_src_arr[0];
+    for(i=1;i<sig_src_length;i++)
+    {
+        sig_dest_arr[i] = sig_dest_arr[i-1] + sig_src_arr[i];
+    }
+}
 
 

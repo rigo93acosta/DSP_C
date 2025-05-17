@@ -16,4 +16,8 @@ Output signal:
 
 ![Images](6_Convolution/Output_signal.png)
 
+Output signal using runnig sum:
+
+![Images](6_Convolution/Output_signal_running_sum.png)
+
 > Note: This is taken from a UDEMY Course.
