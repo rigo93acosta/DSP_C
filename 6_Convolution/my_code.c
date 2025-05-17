@@ -22,9 +22,9 @@ int main()
 {
     FILE *input_sig_fptr, *imp_rsp_fptr,*output_sig_fptr;
 
-     convolution( (double*) &InputSignal_f32_1kHz_15kHz[0],
-                  (double*) &Output_signal[0],
-                  (double*) &Impulse_response[0],
+     convolution( (double*) InputSignal_f32_1kHz_15kHz,
+                  (double*) Output_signal,
+                  (double*) Impulse_response,
                   (int) SIG_LENGTH,
                   (int) IMP_RSP_LENGTH
                  );
